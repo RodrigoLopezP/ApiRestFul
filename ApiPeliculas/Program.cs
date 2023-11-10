@@ -11,7 +11,7 @@ internal class Program
         builder.Services.AddDbContext<ApplicationDbContext>(opciones=>
         {
             string strConn=builder.Configuration.GetConnectionString("Default");
-            opciones.UseSqlite();
+            opciones.UseSqlite(strConn, opts => { });
         });
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
