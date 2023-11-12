@@ -1,4 +1,8 @@
 using ApiPeliculas.Peliculas.Data;
+using ApiPeliculas.PeliculasMapper;
+using ApiPeliculas.Repositorio;
+using ApiPeliculas.Repositorio.IRepositorio;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 internal class Program
@@ -11,8 +15,14 @@ internal class Program
         builder.Services.AddDbContext<ApplicationDbContext>(opciones=>
         {
             string strConn=builder.Configuration.GetConnectionString("Default");
-            opciones.UseSqlite(strConn, opts => { });
+            opciones.UseSqlite(strConn, opts => {});
         });
+        //agregamos servicios
+        builder.Services.AddScoped<ICategoriaRepositorio,CategoriaRepositorio>();
+
+        //Agregamos automapper
+        builder.Services.AddAutoMapper(typeof(PeliculasMapper)); 
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
