@@ -9,7 +9,7 @@ namespace ApiPeliculas.Modelos.DTO
     public class CrearCategoriaDto
     {
         [Required(ErrorMessage ="El nombre es obligatorio"),
-        MaxLength(60, ErrorMessage ="Nombre obligatorio")]
+        MaxLength(100, ErrorMessage ="Nombre obligatorio")]
         public string Nombre { get; set; }
     }
 }
