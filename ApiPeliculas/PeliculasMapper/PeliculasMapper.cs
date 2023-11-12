@@ -6,7 +6,7 @@ using ApiPeliculas.Modelos;
 using ApiPeliculas.Modelos.DTO;
 using AutoMapper;
 
-namespace ApiPeliculas
+namespace ApiPeliculas.PeliculasMapper
 {
     public class PeliculasMapper:Profile
     {
