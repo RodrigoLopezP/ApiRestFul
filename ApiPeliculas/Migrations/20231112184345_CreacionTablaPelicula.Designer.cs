@@ -3,6 +3,7 @@ using System;
 using ApiPeliculas.Peliculas.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiPeliculas.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231112184345_CreacionTablaPelicula")]
+    partial class CreacionTablaPelicula
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
@@ -44,18 +47,12 @@ namespace ApiPeliculas.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Clasificacion")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Duracion")
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
