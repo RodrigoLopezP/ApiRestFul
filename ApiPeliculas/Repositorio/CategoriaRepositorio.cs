@@ -59,7 +59,7 @@ namespace ApiPeliculas.Repositorio
 
         public ICollection<Categoria> GetCategorias()
         {
-            return _bd.Categorias.OrderBy(c => c.Nombre).ToList();
+            return _bd.Categorias.OrderBy(categ => categ.Nombre).ToList();
         }
 
         public bool Guardar()

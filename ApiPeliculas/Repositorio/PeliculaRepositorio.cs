@@ -50,12 +50,12 @@ namespace ApiPeliculas.Repositorio
         public Pelicula GetPelicula(int peliculaId)
         {
             Pelicula result = _bd.Peliculas
-                                .FirstOrDefault(c=> c.Id == peliculaId);
+                                .FirstOrDefault(peli=> peli.Id == peliculaId);
             return result;
         }
         public ICollection<Pelicula> GetPeliculas()
         {
-            return _bd.Peliculas.OrderBy(c => c.Nombre).ToList();
+            return _bd.Peliculas.OrderBy(peli => peli.Nombre).ToList();
         }
 
         public ICollection<Pelicula> GetPeliculasEnCategoria(int categoriaId)

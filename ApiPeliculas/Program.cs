@@ -10,15 +10,15 @@ internal class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        string strConn=builder.Configuration.GetConnectionString("Default");
         // Add services to the container.
         builder.Services.AddDbContext<ApplicationDbContext>(opciones=>
         {
-            string strConn=builder.Configuration.GetConnectionString("Default");
             opciones.UseSqlite(strConn, opts => {});
         });
         //agregamos servicios
         builder.Services.AddScoped<ICategoriaRepositorio,CategoriaRepositorio>();
+        builder.Services.AddScoped<IPeliculaRepositorio,PeliculaRepositorio>();
 
         //Agregamos automapper
         builder.Services.AddAutoMapper(typeof(PeliculasMapper)); 
