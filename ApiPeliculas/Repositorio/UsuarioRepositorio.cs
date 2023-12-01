@@ -7,15 +7,22 @@ using ApiPeliculas.Modelos.DTO;
 using ApiPeliculas.Peliculas.Data;
 using ApiPeliculas.Repositorio.IRepositorio;
 using XSystem.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
+using System.Data;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace ApiPeliculas.Repositorio
 {
     public class UsuarioRepositorio : IUsuarioRepositorio
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private string claveSecreta;
 
-        public UsuarioRepositorio(ApplicationDbContext applicationDbContext)
+        public UsuarioRepositorio(ApplicationDbContext applicationDbContext, IConfiguration config)
         {
+            claveSecreta = config.GetValue<string>("ApiSettings:Secreta");
             this._applicationDbContext = applicationDbContext;
         }
         public Usuario GetUsuario(int usuarioId)
@@ -57,10 +64,6 @@ namespace ApiPeliculas.Repositorio
             
             return usuario;
         }
-        public Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto)
-        {
-            throw new NotImplementedException();
-        }
         
         //Método para encriptar contraseña con MD5 se usa tanto en el Acceso como en el Registro
         public static string obtenermd5(string valor)
@@ -72,6 +75,45 @@ namespace ApiPeliculas.Repositorio
             for (int i = 0; i < data.Length; i++)
                 resp += data[i].ToString("x2").ToLower();
             return resp;
+        }
+        public async Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto){
+            string passwordEncriptado= obtenermd5(usuarioLoginDto.Password);
+
+            Usuario? usuario = _applicationDbContext.Usuarios.FirstOrDefault(u =>
+                                            u.NombreUsuario.ToLower() == usuarioLoginDto.NombreUsuario.ToLower()
+                                            && u.Password == passwordEncriptado);
+
+            if (usuario == null)
+            {
+                return new UsuarioLoginRespuestaDto()
+                {
+                    Token = "",
+                    Usuario = null
+                };
+            }
+            //Aqui existe el usuario
+
+            JwtSecurityTokenHandler manejadorToken= new();
+            byte[] key = Encoding.ASCII.GetBytes(claveSecreta);
+
+            SecurityTokenDescriptor tokenDescriptor = new()
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new(ClaimTypes.Name, usuario.NombreUsuario.ToString()),
+                    new (ClaimTypes.Role, usuario.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            SecurityToken token = manejadorToken.CreateJwtSecurityToken(tokenDescriptor);
+
+            UsuarioLoginRespuestaDto usuarioLoginRespuestaDto= new UsuarioLoginRespuestaDto(){
+                Token=manejadorToken.WriteToken(token)
+            };
+
+            return usuarioLoginRespuestaDto;
         }
     }
 }

@@ -19,9 +19,12 @@ internal class Program
         //agregamos servicios
         builder.Services.AddScoped<ICategoriaRepositorio,CategoriaRepositorio>();
         builder.Services.AddScoped<IPeliculaRepositorio,PeliculaRepositorio>();
+        builder.Services.AddScoped<IUsuarioRepositorio,UsuarioRepositorio>();
+
 
         //Agregamos automapper
         builder.Services.AddAutoMapper(typeof(PeliculasMapper)); 
+
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
