@@ -12,6 +12,7 @@ using System.Data;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using AutoMapper;
 
 namespace ApiPeliculas.Repositorio
 {
@@ -19,11 +20,12 @@ namespace ApiPeliculas.Repositorio
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private string claveSecreta;
-
-        public UsuarioRepositorio(ApplicationDbContext applicationDbContext, IConfiguration config)
+        private readonly IMapper _mapper;
+        public UsuarioRepositorio(ApplicationDbContext applicationDbContext, IConfiguration config, IMapper mapper)
         {
             claveSecreta = config.GetValue<string>("ApiSettings:Secreta");
             this._applicationDbContext = applicationDbContext;
+            this._mapper = mapper;
         }
         public Usuario GetUsuario(int usuarioId)
         {
@@ -110,7 +112,8 @@ namespace ApiPeliculas.Repositorio
             SecurityToken token = manejadorToken.CreateJwtSecurityToken(tokenDescriptor);
 
             UsuarioLoginRespuestaDto usuarioLoginRespuestaDto= new UsuarioLoginRespuestaDto(){
-                Token=manejadorToken.WriteToken(token)
+                Token=manejadorToken.WriteToken(token),
+                Usuario= usuario
             };
 
             return usuarioLoginRespuestaDto;
