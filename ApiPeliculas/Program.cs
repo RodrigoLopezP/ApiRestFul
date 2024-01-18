@@ -49,6 +49,18 @@ internal class Program
                 };
             });
 
+        ///Cross-Origin Resource Sharing
+        ///Meccanismo per aggiungere degli headers extra, quindi permettiamo l'accesso usando diversi domini, per poter accedere alla nostra API,
+        ///oltre a quelle che abbiamo di default
+        ///con asterisco *, lo usiamo come wildcard e qualunque si l'header della api andrà bene 
+        builder.Services.AddCors(
+            p => p.AddPolicy("PolicyCorss",
+            builder =>
+            {
+                builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+            })
+        );
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
