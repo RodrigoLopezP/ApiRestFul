@@ -1,9 +1,12 @@
+using System.Text;
 using ApiPeliculas.Peliculas.Data;
 using ApiPeliculas.PeliculasMapper;
 using ApiPeliculas.Repositorio;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 internal class Program
 {
@@ -23,8 +26,28 @@ internal class Program
 
 
         //Agregamos automapper
-        builder.Services.AddAutoMapper(typeof(PeliculasMapper)); 
+        builder.Services.AddAutoMapper(typeof(PeliculasMapper));
 
+        //Authentication configuration
+        string? key=builder.Configuration.GetValue<string>("AppSettings:Secreta");
+
+        builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // Install package Microsoft.AspNetCore.Authentication.JwtBearer
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }
+        ).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,6 +65,8 @@ internal class Program
 
         app.UseHttpsRedirection();
 
+        //add UseAuthentication before the  UseAuthorization (that it's already write here by deafult) 
+        app.UseAuthentication(); // obbligatory for starting use 
         app.UseAuthorization();
 
         app.MapControllers();

@@ -6,6 +6,7 @@ using ApiPeliculas.Modelos;
 using ApiPeliculas.Modelos.DTO;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 
@@ -23,6 +24,7 @@ namespace ApiPeliculas.Controllers
             this.peliculaRepositorio = peliculaRepositorio;
             this.mapper = mapper;
         }
+        [AllowAnonymous]
         [HttpGet("getpeliculas")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)] 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -35,6 +37,8 @@ namespace ApiPeliculas.Controllers
             }
             return Ok(listaPeliculasDTO);
         }
+        
+        [AllowAnonymous]
         [HttpGet("{peliculaId:int}", Name = "GetPelicula")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -49,10 +53,12 @@ namespace ApiPeliculas.Controllers
             return Ok(itemPeliculaDto);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpPost]
         [ProducesResponseType(201, Type = typeof(PeliculaDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CreaPelicula([FromBody] PeliculaDto peliculaDto)
         {
@@ -80,10 +86,12 @@ namespace ApiPeliculas.Controllers
             return CreatedAtRoute("GetPelicula", new{peliculaId=pelicula.Id}, pelicula);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpPatch("{peliculaId:int}", Name = "ActualizarPatchPelicula")]
         [ProducesResponseType(201, Type = typeof(PeliculaDto))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult ActualizarPatchPelicula(int peliculaId, [FromBody] PeliculaDto peliDto)
         {
         //ModelState: se i DATA ANNOTATION en el DTO no son respetados, esto saldra FALSE
@@ -105,6 +113,7 @@ namespace ApiPeliculas.Controllers
             return NoContent();
         }
      
+        [Authorize(Roles ="admin")]
         [HttpDelete("{peliculaId:int}",Name ="BorrarPelicula")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -125,6 +134,7 @@ namespace ApiPeliculas.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpGet("GetPeliculasEnCategoria/{categoriaId:int}")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)] 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -141,6 +151,8 @@ namespace ApiPeliculas.Controllers
             }
             return Ok(itemPelicula);
         }
+        
+        [AllowAnonymous]
         [HttpGet("Buscar")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
