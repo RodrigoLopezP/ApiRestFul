@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using ApiPeliculas.Peliculas.Data;
 using ApiPeliculas.PeliculasMapper;
@@ -7,6 +8,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 internal class Program
 {
@@ -64,7 +66,38 @@ internal class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options=>
+        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description="JWT Authentication using Bearer Schemaa"+
+                            "\r\n\r\nAdd the word Bearer, a space, and the token."+
+                            "\r\n\r\n========\r\n\r\n"+
+                            "\r\n\r\nExample: Bearek mfnfnqoeienwwbnrownlnsadkfnsf",
+                            
+                Name="Authorization",
+                In= ParameterLocation.Header,
+                Scheme="Bearer"
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement(){
+                {
+                    new OpenApiSecurityScheme{
+                        Reference= new OpenApiReference
+                        {
+                            Type= ReferenceType.SecurityScheme,
+                            Id="Bearer"
+                        },
+                        Scheme="oauth2",
+                        Name= "Bearer",
+                        In= ParameterLocation.Header
+                    },
+                    new List<string>()
+                }
+            });
+        });
+
+
+
 
         var app = builder.Build();
 
