@@ -29,7 +29,7 @@ internal class Program
         builder.Services.AddAutoMapper(typeof(PeliculasMapper));
 
         //Authentication configuration
-        string? key=builder.Configuration.GetValue<string>("AppSettings:Secreta");
+        string? key=builder.Configuration.GetValue<string>("ApiSettings:Secreta");
 
         builder.Services.AddAuthentication(x =>
             {
